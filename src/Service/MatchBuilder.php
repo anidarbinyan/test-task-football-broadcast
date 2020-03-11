@@ -16,8 +16,8 @@ class MatchBuilder
         $dateTime = $this->buildMatchDateTime($event);
         $tournament = $this->extractTournament($event);
         $stadium = $this->buildStadium($event);
-        $homeTeam = $this->buildHomeTeam($event);
-        $awayTeam = $this->buildAwayTeam($event);
+        $homeTeam = $this->buildHomeTeam($event, $logs);
+        $awayTeam = $this->buildAwayTeam($event, $logs);
         $match = new Match($id, $dateTime, $tournament, $stadium, $homeTeam, $awayTeam);
 
         $this->processLogs($match, $logs);
@@ -58,25 +58,59 @@ class MatchBuilder
         return new Stadium($stadiumInfo['country'], $stadiumInfo['city'], $stadiumInfo['stadium']);
     }
 
-    private function buildHomeTeam(array $startMatchEvent): Team
+    private function buildHomeTeam(array $startMatchEvent, array $logs): Team
     {
-        return $this->buildTeam($startMatchEvent, 1);
+        return $this->buildTeam($startMatchEvent, $logs, 1);
     }
 
-    private function buildAwayTeam(array $startMatchEvent): Team
+    private function buildAwayTeam(array $startMatchEvent, array $logs): Team
     {
-        return $this->buildTeam($startMatchEvent, 2);
+        return $this->buildTeam($startMatchEvent, $logs, 2);
     }
 
-    private function buildTeam(array $event, string $teamNumber): Team
+    private function buildTeam(array $event, array $logs, string $teamNumber): Team
     {
         $teamInfo = $event['details']["team$teamNumber"];
         $players = [];
         foreach ($teamInfo['players'] as $playerInfo) {
-            $players[] = new Player($playerInfo['number'], $playerInfo['name']);
+            $event = $this->buildPlayerEvents($logs, $playerInfo['number'], $teamInfo['title']);
+            $players[] = new Player($playerInfo['number'], $playerInfo['name'],  $event);
         }
 
         return new Team($teamInfo['title'], $teamInfo['country'], $teamInfo['logo'], $players, $teamInfo['coach']);
+    }
+
+    private function buildPlayerEvents(array $logs, int $playerNumber, string $teamName){
+
+        $events = [];
+        $tmpEvents = [];
+
+        foreach ($logs as $log){
+            switch($log['type']){
+                case 'yellowCard':
+                    if($log['details']['playerNumber'] == $playerNumber && $log['details']['team'] == $teamName){
+                        array_push($tmpEvents, Match::YELLOW_CARD_MESSAGE_TYPE);
+                        if(count($tmpEvents) > 1){
+                            $events[]['type'] = Match::RED_CARD_MESSAGE_TYPE;
+                        }else{
+                            $events[]['type'] = Match::YELLOW_CARD_MESSAGE_TYPE;
+                        }
+                    }
+                    break;
+                case 'redCard':
+                    if($log['details']['playerNumber'] == $playerNumber && $log['details']['team'] == $teamName){
+                        $events[]['type'] = Match::RED_CARD_MESSAGE_TYPE;
+                    }
+                    break;
+                case 'goal':
+                    if($log['details']['playerNumber'] == $playerNumber && $log['details']['team'] == $teamName){
+                        $events[]['type'] = Match::GOAL_MESSAGE_TYPE;
+                    }
+                    break;
+            }
+        }
+
+        return $events;
     }
 
     private function processLogs(Match $match, array $logs): void

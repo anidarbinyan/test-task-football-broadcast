@@ -121,6 +121,19 @@
                         </td>
                         <td>
                             {{ player.name }}
+                            {% if player.events | length>0 %}
+                                {% for event in player.events %}
+                                    {% if event.type == constant('App\\Entity\\Match::REPLACE_PLAYER_MESSAGE_TYPE') %}
+                                        <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/replacement.png">
+                                    {% elseif event.type == constant('App\\Entity\\Match::GOAL_MESSAGE_TYPE') %}
+                                        <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/goal.png">
+                                    {% elseif event.type == constant('App\\Entity\\Match::YELLOW_CARD_MESSAGE_TYPE') %}
+                                        <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/card.png">
+                                    {% elseif event.type == constant('App\\Entity\\Match::RED_CARD_MESSAGE_TYPE') %}
+                                        <img src="https://www.soccer.ru/sites/all/themes/newtheme/images/events-icons/yellow_red.png">
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
                         </td>
                         <td>
                             {{ player.playTime }}’

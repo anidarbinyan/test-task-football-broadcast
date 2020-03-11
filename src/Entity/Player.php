@@ -8,14 +8,16 @@ class Player
 
     private int $number;
     private string $name;
+    private array $events;
     private string $playStatus;
     private int $inMinute;
     private int $outMinute;
 
-    public function __construct(int $number, string $name)
+    public function __construct(int $number, string $name, array $events)
     {
         $this->number = $number;
         $this->name = $name;
+        $this->events = $events;
         $this->playStatus = self::BENCH_PLAY_STATUS;
         $this->inMinute = 0;
         $this->outMinute = 0;
@@ -29,6 +31,11 @@ class Player
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public  function getEvents(): array
+    {
+        return $this->events;
     }
 
     public function getInMinute(): int
