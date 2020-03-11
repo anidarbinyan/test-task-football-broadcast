@@ -58,8 +58,9 @@ class Player
         if(!$this->outMinute) {
             return 0;
         }
+        $inMinute = $this->inMinute == 1 ? 0 : $this->inMinute;
 
-        return $this->outMinute - $this->inMinute;
+        return $this->outMinute - $inMinute;
     }
 
     public function goToPlay(int $minute): void
