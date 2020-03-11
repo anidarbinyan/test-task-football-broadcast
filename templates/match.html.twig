@@ -114,7 +114,21 @@
                 </tr>
                 </thead>
                 <tbody>
+                {% set attacker_min = 0 %}
+                {% set keeper_min = 0 %}
+                {% set mid_keeper_min = 0 %}
+                {% set goal_keeper_min = 0 %}
+
                 {% for player in team.players %}
+                    {% if player.position == "Н" %}
+                        {% set attacker_min = attacker_min + player.playTime %}
+                    {% elseif player.position == "П" %}
+                        {% set keeper_min = keeper_min + player.playTime %}
+                    {% elseif player.position == "З" %}
+                        {% set mid_keeper_min = mid_keeper_min + player.playTime %}
+                    {% elseif player.position == "В" %}
+                        {% set goal_keeper_min = goal_keeper_min + player.playTime %}
+                    {% endif %}
                     <tr>
                         <td>
                             {{ player.number }}
@@ -143,5 +157,27 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="card-body">
+        <table class="table table">
+            <tbody>
+            <tr>
+                <td>Нападающие</td>
+                <td>{{ attacker_min }}’</td>
+            </tr>
+            <tr>
+                <td>Защитники</td>
+                <td>{{ keeper_min }}’</td>
+            </tr>
+            <tr>
+                <td>Полузащитники</td>
+                <td>{{ mid_keeper_min }}’</td>
+            </tr>
+            <tr>
+                <td>Вратар</td>
+                <td>{{ goal_keeper_min }}’</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 {% endmacro %}

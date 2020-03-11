@@ -13,10 +13,11 @@ class Player
     private int $inMinute;
     private int $outMinute;
 
-    public function __construct(int $number, string $name, array $events)
+    public function __construct(int $number, string $name, string $position, array $events)
     {
         $this->number = $number;
         $this->name = $name;
+        $this->position = $position;
         $this->events = $events;
         $this->playStatus = self::BENCH_PLAY_STATUS;
         $this->inMinute = 0;
@@ -31,6 +32,11 @@ class Player
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getPosition(): string
+    {
+        return $this->position;
     }
 
     public  function getEvents(): array

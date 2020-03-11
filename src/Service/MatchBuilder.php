@@ -74,7 +74,7 @@ class MatchBuilder
         $players = [];
         foreach ($teamInfo['players'] as $playerInfo) {
             $event = $this->buildPlayerEvents($logs, $playerInfo['number'], $teamInfo['title']);
-            $players[] = new Player($playerInfo['number'], $playerInfo['name'],  $event);
+            $players[] = new Player($playerInfo['number'], $playerInfo['name'], $playerInfo['position'],  $event);
         }
 
         return new Team($teamInfo['title'], $teamInfo['country'], $teamInfo['logo'], $players, $teamInfo['coach']);
